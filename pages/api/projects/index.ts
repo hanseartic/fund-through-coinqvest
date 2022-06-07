@@ -34,15 +34,15 @@ const handleGetProjects = (
                     description: "A UI to claim and send claimable balances on the stellar network.",
                 },
                 {
-                    name: " stellar-quest",
+                    name: "stellar-quest",
                     description: "solutions and verifier for stellar quest (https://quest.stellar.org)"
                 },
                 {
-                    name: " fund-through-coinqvest",
+                    name: "fund-through-coinqvest",
                     description: "a one-page to receive funding for github projects (this project)"
                 },
                 {
-                    name: " react_gh_pages",
+                    name: "react_gh_pages",
                     description: "A template for a cra app that is published on github pages"
                 },
             ]
