@@ -1,3 +1,8 @@
+# misc
+.DS_Store
+.idea
+*.pem
+
 # Logs
 logs
 *.log
