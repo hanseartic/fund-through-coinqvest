@@ -16,22 +16,28 @@ type SelectCurrencyItemProps = {
 const Home: NextPage<FundUser> = (props) => {
   const router = useRouter();
   const currencies: SelectCurrencyItemProps[] = [
-    {key:"USD", name:"USD"},
-    {key:"EUR", name:"EUR"},
+    {key:"XLM", name:"XLM"},
+    {key:"ARS:GCYE7C77EB5AWAA25R5XMWNI2EDOKTTFTTPZKM2SR5DI4B4WFD52DARS", name:"ARS"},
+    {key:"BRL:GDVKY2GU2DRXWTBEYJJWSFXIGBZV6AZNBVVSUHEPZI54LIS6BA7DVVSP", name:"BRL"},
+    {key:"EURT:GAP5LETOV6YIE62YAM56STDANPRDO7ZFDBGSNHJQIYGGKSMOZAHOOS2S", name:"EUR"},
+    {key:"NGNT:GAWODAROMJ33V5YDFY3NPYTHVYQG7MJXVJ2ND3AOGIHYRWINES6ACCPD", name:"NGN"},
+    {key:"USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN", name:"USD"},
   ];
 
   const [funds, setFunds] = useState<Map<string, number>>(new Map());
-  const [currency, setCurrency] = useState<Set<Key>>(new Set(["USD"]));
+  const [currency, setCurrency] = useState<Set<Key>>(new Set(["XLM"]));
+  const [pathHash, setPathHash] = useState<string>();
   const selectedCurrency = useMemo(() => {
-    if (undefined === currency) return "Currency";
-    return Array.from(currency.values()).join("");
+    if (undefined === currency) return currencies[0];
+    const currencyKey = Array.from(currency.values()).join("");
+    return currencies.find(c => c.key === currencyKey);
   }, [currency]);
 
   const requestFunding = useCallback(async () => {
     const requestBody = {
-      currency: selectedCurrency,
+      currency: selectedCurrency!.key,
       projects: Array.from(funds.entries()).map(entry => ({name: entry[0], amount: entry[1]})),
-    };
+    }
     const {checkoutUrl} = await fetch("/api/projects/fund", {method: "POST", body: JSON.stringify(requestBody)})
         .then(res => res.json())
         .catch(console.warn);
@@ -65,8 +71,19 @@ const Home: NextPage<FundUser> = (props) => {
   };
 
   useEffect(() => {
+    if (pathHash !== undefined && router.isReady) {
+      const newUrl = router.asPath.split('#')[0] + "#" + pathHash;
+      router.push(newUrl, newUrl,{shallow: true}).catch(console.warn);
+    }
+  }, [pathHash, router.isReady]);
+
+  useEffect(() => {
+    const [path, hash] = router.asPath.split('#');
     Object.keys(router.query).forEach(key => {
       handleToggle(true, key);
+      if (hash === undefined && router.isReady) {
+        setPathHash(key);
+      }
     })
   }, []);
 
@@ -89,29 +106,32 @@ const Home: NextPage<FundUser> = (props) => {
 
         <div className={styles.grid}>
 
-          <div key={"card_"+props.user} className={styles.card}>
-            <Switch id="card_user"
-                    initialChecked={props.user in router.query}
-                    onChange={(e: SwitchEvent) => {
-              handleToggle(e.target.checked, props.user)
-            }}></Switch>
-            <h2>{props.short}</h2>
-            <p>{props.description}</p>
-            <Input
-                aria-label={"amount_"+props.user}
-                id={"amount_"+props.user}
-                disabled={!funds.has(props.user)}
-                type="number"
-                labelRight={selectedCurrency}
-                onChange={(e) => {
-                  handleToggle(true, props.user);
-                }}
-                initialValue={`${router.query[props.user]??props.suggestedAmount}`} />
+          <div style={{width: "100%"}} className={styles.grid}>
+            <div key={"card_"+props.user} style={{maxWidth: 500}} className={styles.card}>
+              <a id={props.user} />
+              <Switch id="card_user"
+                      initialChecked={props.user in router.query}
+                      onChange={(e: SwitchEvent) => {
+                handleToggle(e.target.checked, props.user)
+              }}></Switch>
+              <h2>{props.short}</h2>
+              <p>{props.description}</p>
+              <Input
+                  aria-label={"amount_"+props.user}
+                  id={"amount_"+props.user}
+                  disabled={!funds.has(props.user)}
+                  type="number"
+                  labelRight={selectedCurrency?.name}
+                  onChange={(e) => {
+                    handleToggle(true, props.user);
+                  }}
+                  initialValue={`${router.query[props.user]??props.suggestedAmount}`} />
+            </div>
           </div>
-
           {
             props.projects.map(project => (
                 <div key={"card_"+project.name} className={styles.card}>
+                  <a id={project.name} />
                   <Switch id={"card_"+project.name}
                           initialChecked={project.name in router.query}
                           onChange={(e: SwitchEvent) => {
@@ -124,7 +144,7 @@ const Home: NextPage<FundUser> = (props) => {
                       id={"amount_" + project.name}
                       disabled={!funds.has(project.name)}
                       type="number"
-                      labelRight={selectedCurrency}
+                      labelRight={selectedCurrency?.name}
                       onChange={(e) => {
                         handleToggle(true, project.name);
                       }}
@@ -144,7 +164,7 @@ const Home: NextPage<FundUser> = (props) => {
           <Button disabled={totalFunding <= 0} onPress={() => requestFunding()}>Fund selected</Button>&nbsp;with {totalFunding}&nbsp;
           <Dropdown type={"menu"}>
             <Dropdown.Button flat>
-              {selectedCurrency}
+              {selectedCurrency?.name}
             </Dropdown.Button>
             <Dropdown.Menu
                 variant={"flat"}
