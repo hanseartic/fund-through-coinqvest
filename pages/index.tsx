@@ -174,6 +174,7 @@ const Home: NextPage<FundUser> = (props) => {
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
+        <p className={styles.grid}>Spin your own funding page: Start from the&nbsp;<Link href="https://github.com/hanseartic/fund-through-coinqvest#readme" rel="noreferrer" target="_blank">github repo</Link>.</p>
       </footer>
     </div>
   )
