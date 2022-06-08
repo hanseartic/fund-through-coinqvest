@@ -18,4 +18,11 @@ You can get your own funding page up and running in minutes ⌛
     - ```COINQVEST_API_SECRET```
 - ✨ deploy your app on vercel
 - 📡 share the URL
-- 🪙 receive funding or donations
+- 💰 receive funding or donations
+
+### Sharing project-specific links
+If you want to share a funding link for a specific project on your page, you can 
+toggle the switch to on by passing the project-name as query param. Passing a suggested amount is optional but makes sense when
+sharing a project-specific link.
+
+For this project it would look like this: https://fund-through-coinqvest-hanseartic.vercel.app/?fund-through-coinqvest=50

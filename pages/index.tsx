@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css';
 import {Button, Dropdown, Input, Link, Switch, SwitchEvent} from '@nextui-org/react';
-import {Key, useCallback, useMemo, useState} from "react";
+import {Key, useCallback, useEffect, useMemo, useState} from "react";
 import {FundUser} from "./api/projects";
 import absoluteUrl from 'next-absolute-url';
 
@@ -64,6 +64,12 @@ const Home: NextPage<FundUser> = (props) => {
     }
   };
 
+  useEffect(() => {
+    Object.keys(router.query).forEach(key => {
+      handleToggle(true, key);
+    })
+  }, []);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -84,7 +90,9 @@ const Home: NextPage<FundUser> = (props) => {
         <div className={styles.grid}>
 
           <div key={"card_"+props.user} className={styles.card}>
-            <Switch id="user" onChange={(e: SwitchEvent) => {
+            <Switch id="card_user"
+                    initialChecked={props.user in router.query}
+                    onChange={(e: SwitchEvent) => {
               handleToggle(e.target.checked, props.user)
             }}></Switch>
             <h2>{props.short}</h2>
@@ -98,13 +106,15 @@ const Home: NextPage<FundUser> = (props) => {
                 onChange={(e) => {
                   handleToggle(true, props.user);
                 }}
-                initialValue={`${props.suggestedAmount}`} />
+                initialValue={`${router.query[props.user]??props.suggestedAmount}`} />
           </div>
 
           {
             props.projects.map(project => (
                 <div key={"card_"+project.name} className={styles.card}>
-                  <Switch onChange={(e: SwitchEvent) => {
+                  <Switch id={"card_"+project.name}
+                          initialChecked={project.name in router.query}
+                          onChange={(e: SwitchEvent) => {
                     handleToggle(e.target.checked, project.name)
                   }}></Switch>
                   <h2>{project.name}</h2>
@@ -118,7 +128,7 @@ const Home: NextPage<FundUser> = (props) => {
                       onChange={(e) => {
                         handleToggle(true, project.name);
                       }}
-                      initialValue={`${project.suggestedAmount}`} />
+                      initialValue={`${router.query[project.name]??project.suggestedAmount}`} />
                   <p><Link href={`https://github.com/${props.user}/${project.name}`} target={"_blank"} rel={"noreferrer"}>Project repo</Link></p>
 
                 </div>
