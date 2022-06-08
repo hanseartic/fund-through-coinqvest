@@ -38,6 +38,10 @@ const handleGetProjects = (
                     description: "solutions and verifier for stellar quest (https://quest.stellar.org)"
                 },
                 {
+                    name: "bad-signer",
+                    description: "Creating a public record of a specific account-lockout-scheme."
+                },
+                {
                     name: "fund-through-coinqvest",
                     description: "a one-page to receive funding for github projects (this project)"
                 },
