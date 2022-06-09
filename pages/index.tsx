@@ -72,16 +72,23 @@ const Home: NextPage<FundUser> = (props) => {
 
   useEffect(() => {
     if (pathHash !== undefined && router.isReady) {
-      const newUrl = router.asPath.split('#')[0] + "#" + pathHash;
+      const newUrl = router.asPath.split('#')[0] + '#' + pathHash;
       router.push(newUrl, newUrl,{shallow: true}).catch(console.warn);
+      Object.values(document.getElementsByClassName(styles.card)).forEach(card => {
+        console.log(card.id)
+        if (card.id === `card_${pathHash}`) {
+          card.classList.add(styles.selected);
+        } else {
+          card.classList.remove(styles.selected);
+        }
+      });
     }
   }, [pathHash, router.isReady]);
 
   useEffect(() => {
-    const [path, hash] = router.asPath.split('#');
     Object.keys(router.query).forEach(key => {
       handleToggle(true, key);
-      if (hash === undefined && router.isReady) {
+      if (router.isReady) {
         setPathHash(key);
       }
     })
@@ -107,7 +114,7 @@ const Home: NextPage<FundUser> = (props) => {
         <div className={styles.grid}>
 
           <div style={{width: "100%"}} className={styles.grid}>
-            <div key={"card_"+props.user} style={{maxWidth: 500}} className={styles.card}>
+            <div id={"card_"+props.user} key={"card_"+props.user} style={{maxWidth: 500}} className={`${styles.card}`}>
               <a id={props.user} />
               <Switch id="card_user"
                       initialChecked={props.user in router.query}
@@ -130,7 +137,7 @@ const Home: NextPage<FundUser> = (props) => {
           </div>
           {
             props.projects.map(project => (
-                <div key={"card_"+project.name} className={styles.card}>
+                <div id={"card_"+project.name} key={"card_"+project.name} className={styles.card}>
                   <a id={project.name} />
                   <Switch id={"card_"+project.name}
                           initialChecked={project.name in router.query}

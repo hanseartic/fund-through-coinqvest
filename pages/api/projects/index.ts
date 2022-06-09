@@ -21,7 +21,7 @@ const handleGetProjects = (
     res.status(200).json(
         {
             user: "hanseartic",
-            short: "Buy me a coffee",
+            short: "☕ Buy me a coffee",
             description: "I enjoy the sip while working. So this is really appreciated",
             suggestedAmount: 5,
             projects: [
