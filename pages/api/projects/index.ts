@@ -3,6 +3,7 @@ import type {NextApiRequest, NextApiResponse} from "next";
 export type FundUser = {
     user: string,
     short: string,
+    githubSponsor: boolean,
     description: string,
     suggestedAmount?: number,
     projects: ProjectProps[],
@@ -21,6 +22,7 @@ const handleGetProjects = (
     res.status(200).json(
         {
             user: "hanseartic",
+            githubSponsor: true,
             short: "☕ Buy me a coffee",
             description: "I enjoy the sip while working. So this is really appreciated",
             suggestedAmount: 5,

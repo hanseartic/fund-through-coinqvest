@@ -74,14 +74,6 @@ const Home: NextPage<FundUser> = (props) => {
     if (pathHash !== undefined && router.isReady) {
       const newUrl = router.asPath.split('#')[0] + '#' + pathHash;
       router.push(newUrl, newUrl,{shallow: true}).catch(console.warn);
-      Object.values(document.getElementsByClassName(styles.card)).forEach(card => {
-        console.log(card.id)
-        if (card.id === `card_${pathHash}`) {
-          card.classList.add(styles.selected);
-        } else {
-          card.classList.remove(styles.selected);
-        }
-      });
     }
   }, [pathHash, router.isReady]);
 
@@ -113,8 +105,8 @@ const Home: NextPage<FundUser> = (props) => {
 
         <div className={styles.grid}>
 
-          <div style={{width: "100%"}} className={styles.grid}>
-            <div id={"card_"+props.user} key={"card_"+props.user} style={{maxWidth: 500}} className={`${styles.card}`}>
+          <div style={{width: "100%"}} className={`${styles.grid} ${styles.user}`}>
+            <div id={"card_"+props.user} key={"card_"+props.user} className={`${styles.card} ${funds.has(props.user)&&styles.selected}`}>
               <a id={props.user} />
               <Switch id="card_user"
                       initialChecked={props.user in router.query}
@@ -123,21 +115,29 @@ const Home: NextPage<FundUser> = (props) => {
               }}></Switch>
               <h2>{props.short}</h2>
               <p>{props.description}</p>
-              <Input
-                  aria-label={"amount_"+props.user}
-                  id={"amount_"+props.user}
-                  disabled={!funds.has(props.user)}
-                  type="number"
-                  labelRight={selectedCurrency?.name}
-                  onChange={(e) => {
-                    handleToggle(true, props.user);
-                  }}
-                  initialValue={`${router.query[props.user]??props.suggestedAmount}`} />
+              <div className={`${styles.amountInput} ${funds.has(props.user) || styles.disabled}`}>
+                <Input
+                    aria-label={"amount_"+props.user}
+                    id={"amount_"+props.user}
+                    disabled={!funds.has(props.user)}
+                    type="number"
+                    labelRight={selectedCurrency?.name}
+                    onChange={(e) => {
+                      handleToggle(true, props.user);
+                    }}
+                    initialValue={`${router.query[props.user]??props.suggestedAmount}`} />
+              </div>
             </div>
+            { props.githubSponsor && (
+                <div className={styles.card}>
+                <iframe src={`https://github.com/sponsors/${props.user}/card`}
+                        title={`Sponsor ${props.user} on github`}/>
+                </div>
+            )}
           </div>
           {
             props.projects.map(project => (
-                <div id={"card_"+project.name} key={"card_"+project.name} className={styles.card}>
+                <div id={"card_"+project.name} key={"card_"+project.name} className={`${styles.card} ${funds.has(project.name)&&styles.selected}`}>
                   <a id={project.name} />
                   <Switch id={"card_"+project.name}
                           initialChecked={project.name in router.query}
@@ -145,19 +145,20 @@ const Home: NextPage<FundUser> = (props) => {
                     handleToggle(e.target.checked, project.name)
                   }}></Switch>
                   <h2>{project.name}</h2>
+                  <h6><Link href={`https://github.com/${props.user}/${project.name}`} target={"_blank"} rel={"noreferrer"}>🔗 github repo</Link></h6>
                   <p>{project.description}</p>
-                  <Input
-                      aria-label={"amount_" + project.name}
-                      id={"amount_" + project.name}
-                      disabled={!funds.has(project.name)}
-                      type="number"
-                      labelRight={selectedCurrency?.name}
-                      onChange={(e) => {
-                        handleToggle(true, project.name);
-                      }}
-                      initialValue={`${router.query[project.name]??project.suggestedAmount}`} />
-                  <p><Link href={`https://github.com/${props.user}/${project.name}`} target={"_blank"} rel={"noreferrer"}>Project repo</Link></p>
-
+                  <div className={`${styles.amountInput} ${funds.has(project.name) || styles.disabled}`}>
+                    <Input
+                        aria-label={"amount_" + project.name}
+                        id={"amount_" + project.name}
+                        disabled={!funds.has(project.name)}
+                        type="number"
+                        labelRight={selectedCurrency?.name}
+                        onChange={(e) => {
+                          handleToggle(true, project.name);
+                        }}
+                        initialValue={`${router.query[project.name]??project.suggestedAmount}`} />
+                  </div>
                 </div>
             ))
           }
@@ -220,9 +221,14 @@ const Home: NextPage<FundUser> = (props) => {
 const getServerSideProps: GetServerSideProps<FundUser> = async (context) => {
   const { origin } = absoluteUrl(context.req);
   const projectsURL = new URL("/api/projects", origin);
-  return await fetch(projectsURL)
+  const serverSideProps = await fetch(projectsURL)
       .then(res => res.json())
-      .then(json => ({props: json}))
+      .then(json => ({props: json}));
+  if (serverSideProps.props.githubSponsor) {
+    serverSideProps.props.githubSponsor = await fetch(`https://github.com/sponsors/${serverSideProps.props.user}/card`)
+        .then(res => res.status === 200);
+  }
+  return serverSideProps;
 }
 export { getServerSideProps };
 export default Home
