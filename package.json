@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/hanseartic/fund-through-coinqvest/issues"
   },
-  "homepage": "https://github.com/hanseartic/fund-through-coinqvest#readme",
+  "homepage": "https://fund.hanseartic.de?hanseartic=10",
   "dependencies": {
     "@nextui-org/react": "^1.0.0-beta.8",
     "coinqvest-merchant-sdk": "^0.0.8",

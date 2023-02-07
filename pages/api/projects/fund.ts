@@ -58,17 +58,14 @@ const handleGetFunding = async (
         process.env.COINQVEST_API_SECRET
     );
 
-    coinqvestClient.post("/checkout/hosted",
-        requestBody,
-        (coinqvestResponse: { status: number; data: {url: string}}) => {
-            if (coinqvestResponse.status !== 200) {
-                res.status(coinqvestResponse.status).json({
-                    message: 'Could not create coinqvest checkout.'
-                })
-                return;
-            }
-            res.json({checkoutUrl: coinqvestResponse.data.url, r: requestBody});
-        });
+    const coinqvestResponse: {status: number; data: {url: string}} = await coinqvestClient.post("/checkout/hosted", requestBody);
+    if (coinqvestResponse.status !== 200) {
+        res.status(coinqvestResponse.status).json({
+            message: 'Could not create coinqvest checkout.'
+        })
+        return;
+    }
+    res.json({checkoutUrl: coinqvestResponse.data.url, r: requestBody});
 };
 
 export default handleGetFunding;
