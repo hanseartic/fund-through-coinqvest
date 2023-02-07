@@ -51,6 +51,14 @@ const handleGetProjects = (
                     name: "react_gh_pages",
                     description: "A template for a cra app that is published on github pages"
                 },
+                {
+                    name: "remark-qrcode-directive",
+                    description: "QR-code directive plugin for remark"
+                },
+                {
+                    name: "remark-env-directive",
+                    description: "substitute environment variables in markdown directive plugin for remark"
+                }
             ]
         }
     )
