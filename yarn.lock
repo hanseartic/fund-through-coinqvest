@@ -1085,9 +1085,9 @@ clsx@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/clsx/-/clsx-1.1.1.tgz"
 
-coinqvest-merchant-sdk@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.npmjs.org/coinqvest-merchant-sdk/-/coinqvest-merchant-sdk-0.0.8.tgz"
+coinqvest-merchant-sdk@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/coinqvest-merchant-sdk/-/coinqvest-merchant-sdk-0.0.11.tgz#cadb665ef233935840b0a1059bd0f11367d4d154"
   dependencies:
     axios "^0.21.1"
 
